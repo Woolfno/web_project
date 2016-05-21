@@ -1,8 +1,10 @@
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import render
 from django.views.decorators.http import require_GET
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
+
+from qa.forms import AskForm, AnswerForm
 from qa.models import Question
 from qa.models import Answer
 from qa.models import paginate
@@ -41,6 +43,29 @@ def question_detail(request, pk):
         "answers": answers,
     })
 
+def question_add(request):
+    if request.method=='POST':
+        form=AskForm(request.POST)
+        if form.is_valid():
+            question=form.save()
+            return HttpResponseRedirect(question.get_url())
+    else:
+        form=AskForm()
+    return render(request,'qa/question_add.html',{
+        'form':form
+    })
+
+def answer_add(request):
+    if request.method=='POST':
+        form=AnswerForm(request.POST)
+        if form.is_valid():
+            answer=form.save()
+            return HttpResponseRedirect(answer.get_url())
+    else:
+        form=AnswerForm()
+    return render(request,'qa/answer_add.html',{
+        'form':form
+    })
 
 def create_question():
     from datetime import datetime

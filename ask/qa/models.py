@@ -16,7 +16,13 @@ class Question(models.Model):
                                null=True,
                                related_name='+')
     likes = models.ManyToManyField(User,
+                                   null=True,
                                    related_name='+')
+    def __str__(self):
+        return self.title
+
+    def get_url(self):
+        return '/question/%d/' % self.id
 
 
 class Answer(models.Model):
@@ -26,8 +32,11 @@ class Answer(models.Model):
                                  on_delete=models.SET_NULL,
                                  null=True)
     author = models.ForeignKey(User,
+                               null=True,
                                related_name='+')
 
+    def get_url(self):
+        return '/question/%d/' % self.question_id
 
 def paginate(request, qs):
     try:
