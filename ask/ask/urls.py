@@ -21,9 +21,10 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^login/',qa_views.test),
     url(r'^signup/',qa_views.test),
-    url(r'^question/(\d+)/$',include('qa.urls')),
+    url(r'^question/(?P<pk>(\d+))/$',qa_views.question_detail),
     url(r'^ask/',qa_views.test),
-    url(r'^popular/',qa_views.test),
+    url(r'^popular/',qa_views.popular_questions),
     url(r'^new/',qa_views.test),
-    url(r'^$',qa_views.test),
+    url(r'^$',qa_views.questions_list),
+    url(r'^create/',qa_views.create_data),
 ]
