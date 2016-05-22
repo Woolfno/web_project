@@ -12,5 +12,12 @@
     {{ answer.author.username }}<br>
     <hr>
 {% endfor %}
+
+<form method="post" action="/answer/">
+    {% csrf_token %}
+    {{ form.as_ul }}
+    <button type="submit">Сохранить</button>
+</form>
+
 </body>
 </html>

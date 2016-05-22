@@ -15,12 +15,12 @@ class AskForm(forms.Form):
 
 class AnswerForm(forms.Form):
     text=forms.CharField(widget=forms.Textarea)
-    question=forms.ModelMultipleChoiceField(queryset=Question.objects.all())
+    question=forms.IntegerField(widget=forms.HiddenInput())
 
     def save(self):
         answer=Answer()
         answer.text=self.cleaned_data['text']
-        answer.question=self.cleaned_data.get('question')[0]
+        answer.question_id=self.cleaned_data['question']
         answer.added_at=datetime.now()
         answer.save()
         return answer

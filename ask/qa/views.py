@@ -1,6 +1,6 @@
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import render
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET,require_POST
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -37,10 +37,13 @@ def question_detail(request, pk):
         question = Question.objects.get(pk=pk)
     except ObjectDoesNotExist:
         raise Http404
+
     answers = Answer.objects.filter(question=question).all()
+    form=AnswerForm(initial={'question':pk})
     return render(request, 'qa/question_detail.html', {
         "question": question,
         "answers": answers,
+        "form":form,
     })
 
 def question_add(request):
@@ -55,17 +58,14 @@ def question_add(request):
         'form':form
     })
 
+@require_POST
 def answer_add(request):
-    if request.method=='POST':
-        form=AnswerForm(request.POST)
-        if form.is_valid():
-            answer=form.save()
-            return HttpResponseRedirect(answer.get_url())
-    else:
-        form=AnswerForm()
-    return render(request,'qa/answer_add.html',{
-        'form':form
-    })
+    form=AnswerForm(request.POST)
+    if form.is_valid():
+        answer=form.save()
+        return HttpResponseRedirect(answer.get_url())
+    return HttpResponseRedirect('/question/%s/' % request.POST['question'])
+
 
 def create_question():
     from datetime import datetime
