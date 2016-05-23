@@ -7,6 +7,7 @@
 <body>
 {% for question in questions %}
     <a href="/question/{{ question.id }}/">{{ question.title }}</a><br>
+    {{ question.author }}
     <hr>
 {% endfor %}
 

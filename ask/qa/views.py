@@ -1,10 +1,12 @@
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import render
 from django.views.decorators.http import require_GET,require_POST
 from django.contrib.auth.models import User
+from django.contrib.auth import login,authenticate
 from django.core.exceptions import ObjectDoesNotExist
 
-from qa.forms import AskForm, AnswerForm
+from qa.forms import AskForm, AnswerForm, SignupForm
 from qa.models import Question
 from qa.models import Answer
 from qa.models import paginate
@@ -46,10 +48,12 @@ def question_detail(request, pk):
         "form":form,
     })
 
+@login_required(login_url='/login/')
 def question_add(request):
     if request.method=='POST':
         form=AskForm(request.POST)
         if form.is_valid():
+            form._user=request.user
             question=form.save()
             return HttpResponseRedirect(question.get_url())
     else:
@@ -59,13 +63,30 @@ def question_add(request):
     })
 
 @require_POST
+@login_required(login_url='/login/')
 def answer_add(request):
     form=AnswerForm(request.POST)
     if form.is_valid():
+        form._user=request.user
         answer=form.save()
         return HttpResponseRedirect(answer.get_url())
     return HttpResponseRedirect('/question/%s/' % request.POST['question'])
 
+
+def signup(request):
+    if request.method=='POST':
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            user=form.save()
+            user=authenticate(username=user.username,password=request.POST['password1'])
+            if user is not None and user.is_active:
+                login(request,user)
+                return HttpResponseRedirect('/')
+    else:
+        form=SignupForm()
+    return render(request,'qa/signup.html',{
+        'form':form
+    })
 
 def create_question():
     from datetime import datetime
