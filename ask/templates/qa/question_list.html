@@ -1,0 +1,40 @@
+﻿{% extends "qa/base.html" %}
+{% block content %}
+
+{% for question in questions %}
+<div class="panel panel-default">
+  <div class="panel-body">
+    <div class="ask-post">
+        <div class="row">
+            <div class="col-md-3">
+                <img src="{{ question.author.profile.avatar.url }}" class="img-thumbnail" width="140">
+            </div>
+            <div class="col-md-9">
+                <a href="/question/{{ question.id}}"><h2 class="ask-post-title">{{ question.title }}</h2></a>
+                <p class="ask-post-meta">{{ question.added_at|date:"j F, Y"}} by {{question.author}}</p>
+                <p>{{ question.text|truncatewords:"25" }}</p>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+	<nav>
+        <ul class="pager">
+			<li>{% if questions.has_previous %}
+				<a href="?page={{ questions.previous_page_number }}">Предыдущий</a>
+				{% endif %}
+			</li>
+			<li>
+				<span class="current">
+					Страница {{ questions.number }} из {{ questions.paginator.num_pages }}.
+				</span>
+			</li>			
+            <li>{% if questions.has_next %}
+				<a href="?page={{ questions.next_page_number }}">Следующий</a>
+				{% endif %}
+			</li>
+        </ul>
+	</nav>
+		  
+{% endblock %}

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
 from django.core.paginator import Paginator, EmptyPage
@@ -16,8 +17,8 @@ class Question(models.Model):
                                null=True,
                                related_name='+')
     likes = models.ManyToManyField(User,
-                                   null=True,
                                    related_name='+')
+
     def __str__(self):
         return self.title
 
@@ -34,9 +35,23 @@ class Answer(models.Model):
     author = models.ForeignKey(User,
                                null=True,
                                related_name='+')
+    correct=models.BooleanField(default=False)
 
     def get_url(self):
         return '/question/%d/' % self.question_id
+
+class Profile(models.Model):
+    user=models.OneToOneField(User)
+    nick_name=models.TextField(null=True)
+    avatar=models.ImageField(upload_to='images/user',verbose_name='Изображение',null=True)
+
+    def __unicode__(self):
+        return self.user
+
+    class Meta:
+        verbose_name='Профиль'
+        verbose_name_plural='Профиль'
+
 
 def paginate(request, qs):
     try:
